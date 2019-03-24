@@ -6,8 +6,10 @@ from xdo import Xdo
 import time
 import random
 import os
+import threading
 
 xdo = Xdo()
+chose = ""
 last = time.time()
 votes={}
 
@@ -23,28 +25,41 @@ def do_key(keyname):
         xdo.send_keysequence_window(coq[0],keyname.encode()) 
     else:
         print("No matching window found.")
+
+def countVotes():
+    global last, votes, chose
+    while True:
+        os.system('clear')
+        print("Did: "+chose)
+        highest = None
+        highestKey = []
+        for key in votes.keys():
+            print(key+": "+str(votes[key]))
+            if highest is None or votes[key] > highest:
+                highest = votes[key]
+                highestKey = [key]
+            elif votes[key] == highest:
+                highestKey.append(key)
+        if time.time()-last >config['voteinterval']:
+            last = time.time()
+            if len(highestKey) > 0:
+                do_key(random.choice(highestKey))
+                chose = highestKey
+            else:
+                chose = "None"
+            votes={}
+        time.sleep(0.25)
+
+
 def vote(keyname):
     global last, votes
     if keyname not in votes:
         votes[keyname] = 1
     else:
         votes[keyname] = votes[keyname]+1
-    os.system('clear')
-    highest = None
-    highestKey = []
-    for key in votes.keys():
-        print(key+": "+str(votes[key]))
-        if highest is None or votes[key] > highest:
-            highest = votes[key]
-            highestKey = [key]
-        elif votes[key] == highest:
-            highestKey.append(key)
-    if time.time()-last >config['voteinterval']:
-        last = time.time()
-        if len(highestKey) > 0:
-            do_key(random.choice(highestKey))
-        votes={}
 
+thread = threading.Thread(target=countVotes)
+thread.start()
 
 # --------------------------------------------- Start Settings ----------------------------------------------------
 HOST = "irc.twitch.tv"                          # Hostname of the IRC-Server in this case twitch's
