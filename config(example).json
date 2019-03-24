@@ -2,5 +2,6 @@
 "username":"test",
 "oauth":"oauth:fr621vl3rb55zma94g07s8c9p1wm24",
 "windowname":"CavesOfQud",
-"voteinterval":3
+"voteinterval":3,
+"mappings":{"Space":"space", "Tilde":"grave"}
 }

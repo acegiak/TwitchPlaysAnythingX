@@ -43,8 +43,8 @@ def countVotes():
         if time.time()-last >config['voteinterval']:
             last = time.time()
             if len(highestKey) > 0:
-                do_key(random.choice(highestKey))
-                chose = highestKey
+                chose = random.choice(highestKey)
+                do_key(chose)
             else:
                 chose = "None"
             votes={}
@@ -52,7 +52,10 @@ def countVotes():
 
 
 def vote(keyname):
-    global last, votes
+    global last, votes, config
+    if "mappings" in config.keys():
+        if keyname in config['mappings'].keys():
+            keyname = config['mappings'][keyname]
     if keyname not in votes:
         votes[keyname] = 1
     else:
